@@ -53,7 +53,7 @@
             content: '';
             position: fixed;
             inset: 0;
-            background: 
+            background:
                 radial-gradient(circle at 20% 20%, rgba(88, 166, 255, 0.08) 0%, transparent 50%),
                 radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.08) 0%, transparent 50%),
                 radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.05) 0%, transparent 70%);
@@ -63,10 +63,13 @@
         }
 
         @keyframes floatBackground {
-            0%, 100% {
+
+            0%,
+            100% {
                 transform: scale(1) rotate(0deg);
                 opacity: 0.6;
             }
+
             50% {
                 transform: scale(1.1) rotate(5deg);
                 opacity: 0.8;
@@ -74,7 +77,10 @@
         }
 
         /* Ensure content is above animated background */
-        .top-banner, header, main, footer {
+        .top-banner,
+        header,
+        main,
+        footer {
             position: relative;
             z-index: 1;
         }
@@ -105,8 +111,13 @@
         }
 
         @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
+            0% {
+                transform: translateX(-100%);
+            }
+
+            100% {
+                transform: translateX(100%);
+            }
         }
 
         .top-banner img {
@@ -224,8 +235,15 @@
         }
 
         @keyframes gradientShift {
-            0%, 100% { background-position: 0% center; }
-            50% { background-position: 100% center; }
+
+            0%,
+            100% {
+                background-position: 0% center;
+            }
+
+            50% {
+                background-position: 100% center;
+            }
         }
 
         header p.subtitle {
@@ -288,8 +306,13 @@
         }
 
         @keyframes rotateGlow {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         .filter-bar label {
@@ -432,8 +455,15 @@
         }
 
         @keyframes shimmerTop {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.7;
+            }
         }
 
         .stat-card.c1::before {
@@ -746,6 +776,193 @@
                 height: clamp(60px, 10vw, 100px);
             }
         }
+
+        /* ── Chart Zoom Modal ── */
+        .chart-zoom-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .chart-zoom-overlay.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .chart-zoom-container {
+            background: rgba(22, 27, 34, 0.95);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(88, 166, 255, 0.3);
+            border-radius: 20px;
+            padding: 2.5rem;
+            max-width: 95vw;
+            max-height: 90vh;
+            width: 1200px;
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(88, 166, 255, 0.2), 0 0 60px rgba(88, 166, 255, 0.15);
+            position: relative;
+            animation: zoomIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        @keyframes zoomIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .chart-zoom-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent1) 0%, var(--accent4) 50%, var(--accent2) 100%);
+            background-size: 200% auto;
+            animation: gradientShift 3s linear infinite;
+        }
+
+        .chart-zoom-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+            gap: 2rem;
+        }
+
+        .chart-zoom-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .chart-zoom-subtitle {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+            background: linear-gradient(90deg, var(--text) 0%, var(--accent1) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .chart-zoom-close {
+            background: rgba(248, 81, 73, 0.1);
+            border: 1px solid rgba(248, 81, 73, 0.3);
+            color: #f85149;
+            border-radius: 12px;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 600;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .chart-zoom-close:hover {
+            background: rgba(248, 81, 73, 0.2);
+            border-color: #f85149;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(248, 81, 73, 0.3);
+        }
+
+        .chart-zoom-close:active {
+            transform: translateY(0);
+        }
+
+        .chart-zoom-content {
+            position: relative;
+            width: 100%;
+            height: 70vh;
+            max-height: 600px;
+        }
+
+        .chart-zoom-canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .chart-zoom-hint {
+            position: absolute;
+            bottom: -2rem;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--muted);
+            opacity: 0.7;
+        }
+
+        /* Click to zoom cursor hint */
+        .chart-wrap canvas {
+            cursor: pointer;
+            transition: opacity 0.2s ease;
+        }
+
+        .chart-wrap canvas:hover {
+            opacity: 0.85;
+        }
+
+        .chart-wrap::after {
+            content: '🔍 Click to zoom';
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: rgba(88, 166, 255, 0.15);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(88, 166, 255, 0.3);
+            color: var(--accent1);
+            padding: 0.3rem 0.75rem;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .chart-card:hover .chart-wrap::after {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .chart-zoom-container {
+                padding: 1.5rem;
+                max-width: 100vw;
+                max-height: 95vh;
+            }
+
+            .chart-zoom-content {
+                height: 60vh;
+            }
+
+            .chart-zoom-subtitle {
+                font-size: 1.2rem;
+            }
+        }
     </style>
 </head>
 
@@ -928,6 +1145,25 @@
             target="_blank">Survey Solutions</a> ·
         Built for <a href="https://github.com/vbos-dashboards/digital_week" target="_blank">Digital Week 2026</a>
     </footer>
+
+    <!-- ────────────────── CHART ZOOM MODAL ────────────────── -->
+    <div class="chart-zoom-overlay" id="chartZoomOverlay">
+        <div class="chart-zoom-container">
+            <div class="chart-zoom-header">
+                <div>
+                    <div class="chart-zoom-title" id="zoomChartTitle">QUESTION</div>
+                    <div class="chart-zoom-subtitle" id="zoomChartSubtitle">Chart Title</div>
+                </div>
+                <button class="chart-zoom-close" id="closeZoomBtn">
+                    <span>✕</span>
+                    <span>Close</span>
+                </button>
+            </div>
+            <div class="chart-zoom-content">
+                <canvas id="zoomCanvas" class="chart-zoom-canvas"></canvas>
+            </div>
+        </div>
+    </div>
 
     <!-- ─────────────── SCRIPTS ─────────────── -->
     <script>
@@ -1269,6 +1505,97 @@
 
         // ── Initial render ──
         render(RAW);
+
+        // ═══════════════════════════════════════════════
+        //  CHART ZOOM FUNCTIONALITY
+        // ═══════════════════════════════════════════════
+        let zoomedChart = null;
+        const chartMetadata = {
+            chartAge: { title: 'Q1', subtitle: 'Age Group Distribution' },
+            chartSex: { title: 'Q2', subtitle: 'Sex Distribution' },
+            chartDevice: { title: 'Q4', subtitle: 'Main Device Used' },
+            chartFreq: { title: 'Q5', subtitle: 'Internet Usage Frequency' },
+            chartProvider: { title: 'Q7', subtitle: 'Telecom Provider' },
+            chartInternetUse: { title: 'Q6', subtitle: 'Main Uses of Internet (Multi-select)' },
+            chartEgov: { title: 'Q8', subtitle: 'Would you use online government services?' },
+            chartService: { title: 'Q9', subtitle: 'Preferred Government Service Online' }
+        };
+
+        function openChartZoom(chartId) {
+            const sourceChart = charts[chartId];
+            if (!sourceChart) return;
+
+            const metadata = chartMetadata[chartId];
+            if (metadata) {
+                document.getElementById('zoomChartTitle').textContent = metadata.title;
+                document.getElementById('zoomChartSubtitle').textContent = metadata.subtitle;
+            }
+
+            // Clone chart configuration with larger fonts for zoom view
+            const config = JSON.parse(JSON.stringify(sourceChart.config));
+            
+            // Enhance fonts and sizing for zoom view
+            if (config.options) {
+                if (!config.options.plugins) config.options.plugins = {};
+                if (config.options.plugins.legend) {
+                    if (config.options.plugins.legend.labels) {
+                        config.options.plugins.legend.labels.font = { size: 14 };
+                        config.options.plugins.legend.labels.padding = 16;
+                    }
+                }
+                if (config.options.scales) {
+                    if (config.options.scales.x && config.options.scales.x.ticks) {
+                        config.options.scales.x.ticks.font = { size: 13 };
+                    }
+                    if (config.options.scales.y && config.options.scales.y.ticks) {
+                        config.options.scales.y.ticks.font = { size: 13 };
+                    }
+                }
+            }
+
+            // Create zoomed chart
+            const zoomCanvas = document.getElementById('zoomCanvas');
+            zoomedChart = new Chart(zoomCanvas, config);
+
+            // Show overlay
+            document.getElementById('chartZoomOverlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeChartZoom() {
+            if (zoomedChart) {
+                zoomedChart.destroy();
+                zoomedChart = null;
+            }
+            document.getElementById('chartZoomOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Add click handlers to all chart canvases
+        Object.keys(chartMetadata).forEach(chartId => {
+            const canvas = document.getElementById(chartId);
+            if (canvas) {
+                canvas.addEventListener('click', () => openChartZoom(chartId));
+                canvas.style.cursor = 'pointer';
+            }
+        });
+
+        // Close button handler
+        document.getElementById('closeZoomBtn').addEventListener('click', closeChartZoom);
+
+        // Click outside to close
+        document.getElementById('chartZoomOverlay').addEventListener('click', (e) => {
+            if (e.target.id === 'chartZoomOverlay') {
+                closeChartZoom();
+            }
+        });
+
+        // ESC key to close
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && document.getElementById('chartZoomOverlay').classList.contains('active')) {
+                closeChartZoom();
+            }
+        });
     </script>
 </body>
 
