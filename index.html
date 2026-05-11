@@ -93,12 +93,56 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #0a0e1a 0%, #1a1f3a 100%);
+            background: linear-gradient(135deg, #0a0e1a 0%, #1a1f3a 50%, #0f1628 100%);
+            background-size: 400% 400%;
+            animation: bannerGradient 15s ease infinite;
             border-bottom: 2px solid var(--accent1);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 40px rgba(88, 166, 255, 0.2);
             position: relative;
         }
 
+        @keyframes bannerGradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        /* Floating particles */
+        .top-banner::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                radial-gradient(circle at 15% 40%, rgba(88, 166, 255, 0.4) 1px, transparent 1px),
+                radial-gradient(circle at 85% 60%, rgba(168, 85, 247, 0.4) 1px, transparent 1px),
+                radial-gradient(circle at 50% 20%, rgba(16, 185, 129, 0.4) 1px, transparent 1px),
+                radial-gradient(circle at 75% 80%, rgba(255, 166, 87, 0.4) 1px, transparent 1px),
+                radial-gradient(circle at 25% 75%, rgba(88, 166, 255, 0.3) 1px, transparent 1px);
+            background-size: 100% 100%;
+            animation: floatParticles 20s ease-in-out infinite;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        @keyframes floatParticles {
+            0%, 100% {
+                transform: translate(0, 0);
+                opacity: 0.6;
+            }
+            25% {
+                transform: translate(30px, -20px);
+                opacity: 0.8;
+            }
+            50% {
+                transform: translate(-20px, 30px);
+                opacity: 0.5;
+            }
+            75% {
+                transform: translate(20px, 20px);
+                opacity: 0.7;
+            }
+        }
+
+        /* Pulsing glow overlay */
         .top-banner::after {
             content: '';
             position: absolute;
@@ -111,13 +155,58 @@
         }
 
         @keyframes shimmer {
-            0% {
-                transform: translateX(-100%);
-            }
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
 
-            100% {
-                transform: translateX(100%);
+        /* Light rays effect */
+        .top-banner .banner-rays {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                45deg,
+                transparent 30%,
+                rgba(88, 166, 255, 0.03) 50%,
+                transparent 70%
+            );
+            background-size: 200% 200%;
+            animation: lightRays 8s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes lightRays {
+            0%, 100% { 
+                background-position: 0% 0%;
+                opacity: 0.3;
             }
+            50% { 
+                background-position: 100% 100%;
+                opacity: 0.6;
+            }
+        }
+
+        /* Scan line effect */
+        .top-banner .banner-scan {
+            position: absolute;
+            top: -100%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(88, 166, 255, 0.8) 50%, 
+                transparent 100%
+            );
+            box-shadow: 0 0 10px rgba(88, 166, 255, 0.6);
+            animation: scanLine 4s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes scanLine {
+            0% { top: -2px; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
         }
 
         .top-banner img {
@@ -126,6 +215,21 @@
             max-height: 200px;
             object-fit: cover;
             display: block;
+            animation: bannerZoom 30s ease-in-out infinite;
+            transform-origin: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes bannerZoom {
+            0%, 100% { 
+                transform: scale(1);
+                filter: brightness(1) saturate(1);
+            }
+            50% { 
+                transform: scale(1.05);
+                filter: brightness(1.1) saturate(1.15);
+            }
         }
 
         /* ── Header ── */
@@ -797,8 +901,13 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
 
         .chart-zoom-container {
@@ -821,6 +930,7 @@
                 opacity: 0;
                 transform: scale(0.9);
             }
+
             to {
                 opacity: 1;
                 transform: scale(1);
@@ -970,6 +1080,8 @@
 
     <!-- ────────────────── BANNER ────────────────── -->
     <div class="top-banner">
+        <div class="banner-rays"></div>
+        <div class="banner-scan"></div>
         <img src="banner.jpg" alt="Digital Week Vanuatu - Innovate Today, Sustain Tomorrow" />
     </div>
 
@@ -1533,7 +1645,7 @@
 
             // Clone chart configuration with larger fonts for zoom view
             const config = JSON.parse(JSON.stringify(sourceChart.config));
-            
+
             // Enhance fonts and sizing for zoom view
             if (config.options) {
                 if (!config.options.plugins) config.options.plugins = {};
