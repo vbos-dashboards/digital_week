@@ -70,6 +70,34 @@
             overflow: hidden;
         }
 
+        .header-logo {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+            opacity: 0.9;
+            transition: opacity 0.3s ease;
+        }
+
+        .header-logo:hover {
+            opacity: 1;
+        }
+
+        .header-logo.left {
+            left: clamp(1rem, 3vw, 3rem);
+        }
+
+        .header-logo.right {
+            right: clamp(1rem, 3vw, 3rem);
+        }
+
+        .header-logo img {
+            height: clamp(80px, 12vw, 140px);
+            width: auto;
+            display: block;
+            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+        }
+
         header::before {
             content: '';
             position: absolute;
@@ -473,6 +501,16 @@
             header {
                 padding: 1.5rem 1rem 1rem;
             }
+
+            .header-logo {
+                display: none;
+            }
+        }
+
+        @media (min-width: 601px) and (max-width: 900px) {
+            .header-logo img {
+                height: clamp(60px, 10vw, 100px);
+            }
         }
     </style>
 </head>
@@ -486,6 +524,16 @@
 
     <!-- ────────────────── HEADER ────────────────── -->
     <header>
+        <!-- Left Logo: VBOS -->
+        <div class="header-logo left">
+            <img src="vbos-logo.png" alt="VBOS Logo" />
+        </div>
+
+        <!-- Right Logo: Coat of Arms -->
+        <div class="header-logo right">
+            <img src="coat-of-arms.png" alt="Vanuatu Coat of Arms" />
+        </div>
+
         <div class="header-badge">
             <span class="live-dot"></span>
             ICT Day 2026 · Vanuatu
