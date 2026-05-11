@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ICT Day Live Mini Survey 2026</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --card: #161b22;
+      --border: #30363d;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --accent1: #58a6ff;
+      --accent2: #3fb950;
+      --accent3: #f78166;
+      --accent4: #d2a8ff;
+      --accent5: #ffa657;
+      --accent6: #79c0ff;
+      --gradient1: linear-gradient(135deg, #1f6feb 0%, #388bfd 100%);
+      --gradient2: linear-gradient(135deg, #238636 0%, #3fb950 100%);
+      --gradient3: linear-gradient(135deg, #da3633 0%, #f78166 100%);
+      --gradient4: linear-gradient(135deg, #6e40c9 0%, #d2a8ff 100%);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: linear-gradient(180deg, #0d1117 0%, #161b22 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 2rem 2rem 1.5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% -20%, rgba(88,166,255,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(88,166,255,0.1);
+      border: 1px solid rgba(88,166,255,0.3);
+      border-radius: 2rem;
+      padding: 0.3rem 1rem;
+      font-size: 0.78rem;
+      color: var(--accent1);
+      margin-bottom: 1rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .live-dot {
+      width: 8px; height: 8px;
+      background: #f78166;
+      border-radius: 50%;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.3); }
+    }
+    header h1 {
+      font-size: clamp(1.6rem, 4vw, 2.8rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(90deg, #e6edf3 0%, #58a6ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    header p.subtitle {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-top: 0.5rem;
+    }
+    .header-meta {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-top: 1.2rem;
+      flex-wrap: wrap;
+    }
+    .header-meta span {
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+    .header-meta strong { color: var(--text); }
+
+    /* ── Layout ── */
+    main { max-width: 1280px; margin: 0 auto; padding: 2rem; }
+
+    /* ── Filter bar ── */
+    .filter-bar {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.5rem;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .filter-bar label { font-size: 0.85rem; color: var(--muted); white-space: nowrap; }
+    .filter-bar select {
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.4rem 0.75rem;
+      font-size: 0.85rem;
+      cursor: pointer;
+      outline: none;
+    }
+    .filter-bar select:focus { border-color: var(--accent1); }
+    .filter-info {
+      margin-left: auto;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+    .filter-info strong { color: var(--accent1); }
+    #resetBtn {
+      background: rgba(88,166,255,0.1);
+      border: 1px solid rgba(88,166,255,0.3);
+      color: var(--accent1);
+      border-radius: 8px;
+      padding: 0.4rem 1rem;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    #resetBtn:hover { background: rgba(88,166,255,0.2); }
+
+    /* ── Stat cards ── */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.2rem 1.5rem;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .stat-card:hover { transform: translateY(-2px); border-color: var(--accent1); }
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      border-radius: 12px 12px 0 0;
+    }
+    .stat-card.c1::before { background: var(--gradient1); }
+    .stat-card.c2::before { background: var(--gradient2); }
+    .stat-card.c3::before { background: var(--gradient3); }
+    .stat-card.c4::before { background: var(--gradient4); }
+    .stat-card .label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.5rem; }
+    .stat-card .value { font-size: 2.2rem; font-weight: 800; line-height: 1; }
+    .stat-card.c1 .value { color: var(--accent1); }
+    .stat-card.c2 .value { color: var(--accent2); }
+    .stat-card.c3 .value { color: var(--accent3); }
+    .stat-card.c4 .value { color: var(--accent4); }
+    .stat-card .sub { font-size: 0.78rem; color: var(--muted); margin-top: 0.3rem; }
+
+    /* ── Section headings ── */
+    .section-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 1rem;
+      padding-left: 0.75rem;
+      border-left: 3px solid var(--accent1);
+    }
+
+    /* ── Chart grid ── */
+    .chart-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .chart-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .chart-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: border-color 0.2s;
+    }
+    .chart-card:hover { border-color: #30363d; }
+    .chart-card h3 {
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-bottom: 1.2rem;
+    }
+    .chart-card h3 span {
+      display: block;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      text-transform: none;
+      letter-spacing: 0;
+      margin-top: 0.15rem;
+    }
+    .chart-wrap { position: relative; width: 100%; }
+    .chart-wrap.donut { max-width: 260px; margin: 0 auto; }
+    .chart-wrap.tall { height: 280px; }
+    .chart-wrap.short { height: 220px; }
+    .chart-wrap.xshort { height: 180px; }
+
+    /* ── Internet Use – horizontal bar ── */
+    .horiz-bar-list { list-style: none; padding: 0; }
+    .horiz-bar-list li { margin-bottom: 0.9rem; }
+    .horiz-bar-list .hb-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      margin-bottom: 0.3rem;
+    }
+    .horiz-bar-list .hb-label .name { color: var(--text); }
+    .horiz-bar-list .hb-label .count { color: var(--muted); }
+    .hb-track {
+      background: rgba(255,255,255,0.06);
+      border-radius: 6px;
+      height: 10px;
+      overflow: hidden;
+    }
+    .hb-fill {
+      height: 100%;
+      border-radius: 6px;
+      transition: width 1s ease;
+    }
+
+    /* ── Province table ── */
+    .province-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    .province-table th {
+      text-align: left;
+      padding: 0.5rem 0.75rem;
+      color: var(--muted);
+      font-weight: 600;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .province-table td { padding: 0.55rem 0.75rem; border-bottom: 1px solid rgba(48,54,61,0.5); }
+    .province-table tr:last-child td { border-bottom: none; }
+    .pct-bar {
+      display: inline-block;
+      height: 8px;
+      border-radius: 4px;
+      background: var(--gradient1);
+      min-width: 4px;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1.5rem 2rem;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+    footer a { color: var(--accent1); text-decoration: none; }
+
+    @media (max-width: 600px) {
+      main { padding: 1rem; }
+      header { padding: 1.5rem 1rem 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ────────────────── HEADER ────────────────── -->
+<header>
+  <div class="header-badge">
+    <span class="live-dot"></span>
+    ICT Day 2026 · Vanuatu
+  </div>
+  <h1>ICT Day Live Mini Survey 2026</h1>
+  <p class="subtitle">Real-time results from Survey Solutions · Data collected 11 May 2026</p>
+  <div class="header-meta">
+    <span>📍 <strong>Vanuatu</strong></span>
+    <span>📅 <strong>11 May 2026</strong></span>
+    <span>🗂 <strong>Survey Solutions</strong></span>
+    <span>🌐 Published via <strong>GitHub Pages</strong></span>
+  </div>
+</header>
+
+<!-- ────────────────── MAIN ────────────────── -->
+<main>
+
+  <!-- Filter bar -->
+  <div class="filter-bar">
+    <label for="filterProvince">🔽 Filter by Province:</label>
+    <select id="filterProvince">
+      <option value="all">All Provinces</option>
+      <option value="1">Torba</option>
+      <option value="2">Sanma</option>
+      <option value="3">Penama</option>
+      <option value="4">Malampa</option>
+      <option value="5">Shefa</option>
+      <option value="6">Tafea</option>
+    </select>
+
+    <label for="filterSex">Filter by Sex:</label>
+    <select id="filterSex">
+      <option value="all">All</option>
+      <option value="1">Male</option>
+      <option value="2">Female</option>
+    </select>
+
+    <label for="filterDevice">Filter by Device:</label>
+    <select id="filterDevice">
+      <option value="all">All Devices</option>
+      <option value="1">Smartphone</option>
+      <option value="2">Tablet</option>
+      <option value="3">Laptop/Desktop</option>
+      <option value="4">None</option>
+    </select>
+
+    <button id="resetBtn">✕ Reset</button>
+    <div class="filter-info">Showing <strong id="filteredCount">6</strong> of <strong>6</strong> responses</div>
+  </div>
+
+  <!-- Summary stat cards -->
+  <div class="stat-grid">
+    <div class="stat-card c1">
+      <div class="label">Total Responses</div>
+      <div class="value" id="statTotal">6</div>
+      <div class="sub">Completed interviews</div>
+    </div>
+    <div class="stat-card c2">
+      <div class="label">Daily Internet Users</div>
+      <div class="value" id="statDaily">—</div>
+      <div class="sub">Use internet every day</div>
+    </div>
+    <div class="stat-card c3">
+      <div class="label">Top Device</div>
+      <div class="value" id="statDevice">📱</div>
+      <div class="sub" id="statDeviceSub">—</div>
+    </div>
+    <div class="stat-card c4">
+      <div class="label">e-Gov Willing</div>
+      <div class="value" id="statEgov">—</div>
+      <div class="sub">Would use online gov services</div>
+    </div>
+    <div class="stat-card c1">
+      <div class="label">Top Internet Use</div>
+      <div class="value">📲</div>
+      <div class="sub" id="statTopUse">Social Media</div>
+    </div>
+    <div class="stat-card c2">
+      <div class="label">Top Provider</div>
+      <div class="value">📡</div>
+      <div class="sub" id="statProvider">—</div>
+    </div>
+  </div>
+
+  <!-- ── DEMOGRAPHICS ── -->
+  <p class="section-title">Demographics</p>
+  <div class="chart-grid-2">
+    <div class="chart-card">
+      <h3>Q1 <span>Age Group Distribution</span></h3>
+      <div class="chart-wrap tall"><canvas id="chartAge"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Q2 &amp; Q3 <span>Sex &amp; Province</span></h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <div>
+          <p style="font-size:0.75rem;color:var(--muted);margin-bottom:0.75rem;text-transform:uppercase;letter-spacing:0.05em;">Sex</p>
+          <div class="chart-wrap donut"><canvas id="chartSex"></canvas></div>
+        </div>
+        <div>
+          <p style="font-size:0.75rem;color:var(--muted);margin-bottom:0.75rem;text-transform:uppercase;letter-spacing:0.05em;">Province</p>
+          <table class="province-table" id="provinceTable"></table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── DEVICE & INTERNET ── -->
+  <p class="section-title">Device &amp; Internet Access</p>
+  <div class="chart-grid-3">
+    <div class="chart-card">
+      <h3>Q4 <span>Main Device Used</span></h3>
+      <div class="chart-wrap donut"><canvas id="chartDevice"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Q5 <span>Internet Usage Frequency</span></h3>
+      <div class="chart-wrap short"><canvas id="chartFreq"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Q7 <span>Telecom Provider</span></h3>
+      <div class="chart-wrap donut"><canvas id="chartProvider"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Internet use multi-select -->
+  <div class="chart-grid-2" style="margin-bottom:2rem;">
+    <div class="chart-card">
+      <h3>Q6 <span>Main Uses of Internet (Multi-select)</span></h3>
+      <ul class="horiz-bar-list" id="internetUseList"></ul>
+    </div>
+    <div class="chart-card">
+      <h3>Q6 <span>Internet Use – Response Breakdown</span></h3>
+      <div class="chart-wrap tall"><canvas id="chartInternetUse"></canvas></div>
+    </div>
+  </div>
+
+  <!-- ── e-GOVERNMENT ── -->
+  <p class="section-title">e-Government Readiness</p>
+  <div class="chart-grid-2">
+    <div class="chart-card">
+      <h3>Q8 <span>Would you use online government services?</span></h3>
+      <div class="chart-wrap donut" style="max-width:280px;"><canvas id="chartEgov"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Q9 <span>Preferred Government Service Online</span></h3>
+      <div class="chart-wrap tall"><canvas id="chartService"></canvas></div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ────────────────── FOOTER ────────────────── -->
+<footer>
+  ICT Day Live Mini Survey 2026 · Vanuatu · Data collected via <a href="https://mysurvey.solutions" target="_blank">Survey Solutions</a> ·
+  Built for <a href="https://github.com/vbos-dashboards/digital_week" target="_blank">Digital Week 2026</a>
+</footer>
+
+<!-- ─────────────── SCRIPTS ─────────────── -->
+<script>
+// ═══════════════════════════════════════════════
+//  RAW DATA  (decoded from ictday2026.tab + ddi.xml)
+// ═══════════════════════════════════════════════
+const RAW = [
+  { age_group:8,  sex:2, province:4, device_used:4, internet_freq:1, internet_use:[0,1,1,1,1], provider:3, egov_use:3, online_service:null },
+  { age_group:6,  sex:1, province:3, device_used:1, internet_freq:1, internet_use:[1,0,0,0,1], provider:2, egov_use:1, online_service:4   },
+  { age_group:9,  sex:1, province:1, device_used:1, internet_freq:2, internet_use:[1,0,0,0,0], provider:1, egov_use:1, online_service:1   },
+  { age_group:6,  sex:1, province:4, device_used:2, internet_freq:1, internet_use:[1,0,0,0,1], provider:1, egov_use:2, online_service:null },
+  { age_group:4,  sex:2, province:2, device_used:1, internet_freq:3, internet_use:[1,0,0,0,0], provider:1, egov_use:3, online_service:null },
+  { age_group:2,  sex:2, province:3, device_used:3, internet_freq:2, internet_use:[1,0,0,0,1], provider:2, egov_use:2, online_service:null },
+];
+
+// ── Label maps ──
+const AGE_LABELS  = {1:'Under 15',2:'15–19',3:'20–24',4:'25–29',5:'30–34',6:'35–39',7:'40–44',8:'44–49',9:'50–54',10:'55+'};
+const SEX_LABELS  = {1:'Male',2:'Female'};
+const PROV_LABELS = {1:'Torba',2:'Sanma',3:'Penama',4:'Malampa',5:'Shefa',6:'Tafea'};
+const DEV_LABELS  = {1:'Smartphone',2:'Tablet',3:'Laptop/Desktop',4:'None'};
+const FREQ_LABELS = {1:'Daily',2:'Weekly',3:'Rarely',4:'Never'};
+const USE_LABELS  = ['Social Media','Education','Business/Work','Banking','Entertainment'];
+const PROV_LABELS_ARR = {1:'Vodafone',2:'Vodafone',3:'Starlink',4:'Other'};
+const PROVIDER_LABELS = {1:'Digicel',2:'Vodafone',3:'Starlink',4:'Other'};
+const EGOV_LABELS = {1:'Yes',2:'No',3:'Maybe'};
+const SERVICE_LABELS = {1:'Birth Certificate',2:'Passport',3:'Business Registration',4:'School Registration',5:'Statistics/Data Access'};
+
+// ── Color palettes ──
+const PALETTE_BLUE  = ['#58a6ff','#388bfd','#1f6feb','#0969da','#0550ae'];
+const PALETTE_PIE   = ['#58a6ff','#f78166','#3fb950','#d2a8ff','#ffa657','#79c0ff'];
+const PALETTE_EGOV  = ['#3fb950','#f78166','#ffa657'];
+const PALETTE_USE   = ['#58a6ff','#3fb950','#ffa657','#d2a8ff','#f78166'];
+const PALETTE_PROV  = ['#58a6ff','#3fb950','#ffa657','#f78166','#d2a8ff','#79c0ff'];
+
+// ── Chart defaults ──
+Chart.defaults.color = '#8b949e';
+Chart.defaults.borderColor = '#30363d';
+Chart.defaults.font.family = "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+
+let charts = {};
+
+function count(data, key) {
+  const c = {};
+  data.forEach(r => {
+    const v = r[key];
+    if (v !== null && v !== undefined) c[v] = (c[v] || 0) + 1;
+  });
+  return c;
+}
+function pct(n, total) { return total ? Math.round((n / total) * 100) : 0; }
+function topKey(obj) { return Object.entries(obj).sort((a,b)=>b[1]-a[1])[0]?.[0]; }
+
+// ═══════════════════════════════════════════════
+//  RENDER ALL CHARTS  (called on filter change)
+// ═══════════════════════════════════════════════
+function render(data) {
+  const N = data.length;
+
+  // ── Stat cards ──
+  document.getElementById('statTotal').textContent = N;
+  document.getElementById('filteredCount').textContent = N;
+
+  const dailyCount = data.filter(r => r.internet_freq === 1).length;
+  document.getElementById('statDaily').textContent = pct(dailyCount, N) + '%';
+
+  const devCounts = count(data, 'device_used');
+  const topDev = topKey(devCounts);
+  const devEmoji = {1:'📱',2:'📟',3:'💻',4:'❌'};
+  document.getElementById('statDevice').textContent = topDev ? devEmoji[topDev] : '—';
+  document.getElementById('statDeviceSub').textContent = topDev ? DEV_LABELS[topDev] : '—';
+
+  const egovCounts = count(data, 'egov_use');
+  const egovYesMaybe = (egovCounts[1]||0) + (egovCounts[3]||0);
+  document.getElementById('statEgov').textContent = pct(egovYesMaybe, N) + '%';
+
+  const provCounts = count(data, 'provider');
+  const topProv = topKey(provCounts);
+  document.getElementById('statProvider').textContent = topProv ? PROVIDER_LABELS[topProv] : '—';
+
+  // ── Age Group bar ──
+  destroyChart('chartAge');
+  const ageCounts = count(data, 'age_group');
+  const ageKeys = [1,2,3,4,5,6,7,8,9,10];
+  charts['chartAge'] = new Chart(document.getElementById('chartAge'), {
+    type: 'bar',
+    data: {
+      labels: ageKeys.map(k => AGE_LABELS[k]),
+      datasets: [{
+        label: 'Respondents',
+        data: ageKeys.map(k => ageCounts[k] || 0),
+        backgroundColor: PALETTE_BLUE[0],
+        borderColor: PALETTE_BLUE[1],
+        borderWidth: 1,
+        borderRadius: 6,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 11 } } },
+        y: { grid: { color: '#21262d' }, ticks: { stepSize: 1, precision: 0 } }
+      }
+    }
+  });
+
+  // ── Sex donut ──
+  destroyChart('chartSex');
+  const sexCounts = count(data, 'sex');
+  charts['chartSex'] = new Chart(document.getElementById('chartSex'), {
+    type: 'doughnut',
+    data: {
+      labels: [1,2].map(k => SEX_LABELS[k]),
+      datasets: [{
+        data: [1,2].map(k => sexCounts[k] || 0),
+        backgroundColor: ['#58a6ff','#f78166'],
+        borderColor: '#161b22',
+        borderWidth: 3,
+        hoverOffset: 6,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'bottom', labels: { boxWidth: 12, padding: 12, font: { size: 11 } } }
+      },
+      cutout: '65%'
+    }
+  });
+
+  // ── Province table ──
+  const provCounts2 = count(data, 'province');
+  const provTable = document.getElementById('provinceTable');
+  provTable.innerHTML = `<tr><th>Province</th><th>n</th><th>Share</th></tr>` +
+    [1,2,3,4,5,6].map(k => {
+      const n = provCounts2[k] || 0;
+      const p = pct(n, N);
+      const bar = `<span class="pct-bar" style="width:${p * 0.7}px;"></span>`;
+      return `<tr><td>${PROV_LABELS[k]}</td><td>${n}</td><td>${bar}${p}%</td></tr>`;
+    }).join('');
+
+  // ── Device donut ──
+  destroyChart('chartDevice');
+  const devCounts2 = count(data, 'device_used');
+  charts['chartDevice'] = new Chart(document.getElementById('chartDevice'), {
+    type: 'doughnut',
+    data: {
+      labels: [1,2,3,4].map(k => DEV_LABELS[k]),
+      datasets: [{
+        data: [1,2,3,4].map(k => devCounts2[k] || 0),
+        backgroundColor: PALETTE_PIE,
+        borderColor: '#161b22',
+        borderWidth: 3,
+        hoverOffset: 6,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 10, font: { size: 11 } } } },
+      cutout: '65%'
+    }
+  });
+
+  // ── Internet Frequency bar ──
+  destroyChart('chartFreq');
+  const freqCounts = count(data, 'internet_freq');
+  charts['chartFreq'] = new Chart(document.getElementById('chartFreq'), {
+    type: 'bar',
+    data: {
+      labels: [1,2,3,4].map(k => FREQ_LABELS[k]),
+      datasets: [{
+        label: 'Respondents',
+        data: [1,2,3,4].map(k => freqCounts[k] || 0),
+        backgroundColor: PALETTE_PIE,
+        borderColor: '#161b22',
+        borderWidth: 2,
+        borderRadius: 6,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { display: false } },
+        y: { grid: { color: '#21262d' }, ticks: { stepSize: 1, precision: 0 } }
+      }
+    }
+  });
+
+  // ── Provider donut ──
+  destroyChart('chartProvider');
+  const providerCounts = count(data, 'provider');
+  charts['chartProvider'] = new Chart(document.getElementById('chartProvider'), {
+    type: 'doughnut',
+    data: {
+      labels: [1,2,3,4].map(k => PROVIDER_LABELS[k]),
+      datasets: [{
+        data: [1,2,3,4].map(k => providerCounts[k] || 0),
+        backgroundColor: ['#58a6ff','#f78166','#3fb950','#ffa657'],
+        borderColor: '#161b22',
+        borderWidth: 3,
+        hoverOffset: 6,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 10, font: { size: 11 } } } },
+      cutout: '65%'
+    }
+  });
+
+  // ── Internet Use – horizontal bars ──
+  const useCounts = [0,1,2,3,4].map(i => data.filter(r => r.internet_use[i] === 1).length);
+  const maxUse = Math.max(...useCounts, 1);
+  const colors = PALETTE_USE;
+  document.getElementById('internetUseList').innerHTML = USE_LABELS.map((lbl, i) => {
+    const n = useCounts[i];
+    const w = Math.round((n / N) * 100);
+    return `<li>
+      <div class="hb-label">
+        <span class="name">${lbl}</span>
+        <span class="count">${n} / ${N} &nbsp;(${w}%)</span>
+      </div>
+      <div class="hb-track"><div class="hb-fill" style="width:${w}%;background:${colors[i]};"></div></div>
+    </li>`;
+  }).join('');
+
+  // ── Internet Use grouped bar ──
+  destroyChart('chartInternetUse');
+  charts['chartInternetUse'] = new Chart(document.getElementById('chartInternetUse'), {
+    type: 'bar',
+    data: {
+      labels: USE_LABELS,
+      datasets: [{
+        label: 'Selected',
+        data: useCounts,
+        backgroundColor: PALETTE_USE,
+        borderColor: '#161b22',
+        borderWidth: 2,
+        borderRadius: 6,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 10 } } },
+        y: { grid: { color: '#21262d' }, ticks: { stepSize: 1, precision: 0 }, max: N }
+      }
+    }
+  });
+
+  // ── e-Gov donut ──
+  destroyChart('chartEgov');
+  const egovC = count(data, 'egov_use');
+  charts['chartEgov'] = new Chart(document.getElementById('chartEgov'), {
+    type: 'doughnut',
+    data: {
+      labels: [1,2,3].map(k => EGOV_LABELS[k]),
+      datasets: [{
+        data: [1,2,3].map(k => egovC[k] || 0),
+        backgroundColor: PALETTE_EGOV,
+        borderColor: '#161b22',
+        borderWidth: 3,
+        hoverOffset: 6,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 12, font: { size: 12 } } } },
+      cutout: '65%'
+    }
+  });
+
+  // ── Online Service bar ──
+  destroyChart('chartService');
+  const svcCounts = count(data, 'online_service');
+  const svcKeys = [1,2,3,4,5];
+  charts['chartService'] = new Chart(document.getElementById('chartService'), {
+    type: 'bar',
+    data: {
+      labels: svcKeys.map(k => SERVICE_LABELS[k]),
+      datasets: [{
+        label: 'Responses',
+        data: svcKeys.map(k => svcCounts[k] || 0),
+        backgroundColor: PALETTE_PIE,
+        borderColor: '#161b22',
+        borderWidth: 2,
+        borderRadius: 6,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 10 }, maxRotation: 30 } },
+        y: { grid: { color: '#21262d' }, ticks: { stepSize: 1, precision: 0 } }
+      }
+    }
+  });
+
+  // Update top internet use stat
+  const topUseIdx = useCounts.indexOf(Math.max(...useCounts));
+  document.getElementById('statTopUse').textContent = USE_LABELS[topUseIdx];
+}
+
+function destroyChart(id) {
+  if (charts[id]) { charts[id].destroy(); delete charts[id]; }
+}
+
+// ═══════════════════════════════════════════════
+//  FILTERING
+// ═══════════════════════════════════════════════
+function getFiltered() {
+  const province = document.getElementById('filterProvince').value;
+  const sex      = document.getElementById('filterSex').value;
+  const device   = document.getElementById('filterDevice').value;
+  return RAW.filter(r => {
+    if (province !== 'all' && r.province !== +province) return false;
+    if (sex      !== 'all' && r.sex      !== +sex)      return false;
+    if (device   !== 'all' && r.device_used !== +device) return false;
+    return true;
+  });
+}
+
+['filterProvince','filterSex','filterDevice'].forEach(id =>
+  document.getElementById(id).addEventListener('change', () => render(getFiltered()))
+);
+document.getElementById('resetBtn').addEventListener('click', () => {
+  document.getElementById('filterProvince').value = 'all';
+  document.getElementById('filterSex').value = 'all';
+  document.getElementById('filterDevice').value = 'all';
+  render(RAW);
+});
+
+// ── Initial render ──
+render(RAW);
+</script>
+</body>
+</html>
